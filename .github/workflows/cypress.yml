@@ -1,0 +1,55 @@
+# Nome da pipeline
+name: Execução Manual Cypress
+
+# Gatilho manual
+on:
+  workflow_dispatch:
+
+# Jobs da pipeline
+jobs:
+
+  e2e-tests:
+
+    # Máquina virtual
+    runs-on: ubuntu-latest
+
+    # Passos da execução
+    steps:
+
+      # Clonar repositório
+      - name: Checkout do projeto
+        uses: actions/checkout@v4
+
+      # Instalar Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      # Instalar dependências
+      - name: Instalar dependências
+        run: npm install
+
+      # Verificar instalação do Cypress
+      - name: Verificar Cypress
+        run: npx cypress verify
+
+      # Executar testes
+      - name: Executar testes E2E
+        run: npx cypress run --browser chrome
+
+      # Upload screenshots
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: cypress/screenshots
+
+      # Upload vídeos
+      - name: Upload vídeos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: videos
+          path: cypress/videos
